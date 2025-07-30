@@ -2,8 +2,8 @@ use std::{collections::HashMap, sync::Arc};
 
 use axum::{
     Form, Router,
-    http::StatusCode,
-    response::Html,
+    http::{HeaderMap, StatusCode},
+    response::IntoResponse,
     routing::{get, post},
 };
 use base64::{Engine, engine::general_purpose};
@@ -91,8 +91,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 async fn metadata_handler(
     axum::extract::State(state): axum::extract::State<AppState>,
-) -> Html<String> {
-    Html(state.metadata)
+) -> impl IntoResponse {
+    let mut headers = HeaderMap::new();
+    headers.insert(
+        "content-type",
+        "application/samlmetadata+xml".parse().unwrap(),
+    );
+
+    (headers, state.metadata)
 }
 
 async fn acs_handler(
