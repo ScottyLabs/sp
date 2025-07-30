@@ -116,7 +116,7 @@ async fn login_handler(State(state): State<AppState>) -> Result<impl IntoRespons
         StatusCode::INTERNAL_SERVER_ERROR
     })?;
 
-    println!("Using IdP SSO URL from metadata: {}", cmu_idp_url);
+    println!("Using IdP SSO URL from metadata: {cmu_idp_url}");
 
     // Create a proper SAML authentication request using samael
     match state.sp.make_authentication_request(&cmu_idp_url) {
@@ -125,7 +125,7 @@ async fn login_handler(State(state): State<AppState>) -> Result<impl IntoRespons
 
             // Convert the AuthnRequest to XML and base64 encode it
             let authn_request_xml = authn_request.to_string().map_err(|e| {
-                eprintln!("Error serializing AuthnRequest to XML: {:?}", e);
+                eprintln!("Error serializing AuthnRequest to XML: {e:?}");
                 StatusCode::INTERNAL_SERVER_ERROR
             })?;
 
@@ -160,7 +160,7 @@ async fn login_handler(State(state): State<AppState>) -> Result<impl IntoRespons
             Ok(Html(html))
         }
         Err(e) => {
-            eprintln!("Error creating SAML authentication request: {:?}", e);
+            eprintln!("Error creating SAML authentication request: {e:?}");
             Err(StatusCode::INTERNAL_SERVER_ERROR)
         }
     }
@@ -170,7 +170,7 @@ fn get_idp_sso_url(idp_metadata: &EntityDescriptor) -> Option<String> {
     idp_metadata
         .idp_sso_descriptors
         .as_ref()? // Get IdP SSO descriptors
-        .iter() // Iterate through them
+        .iter()
         .flat_map(|descriptor| &descriptor.single_sign_on_services) // Get all SSO services
         .find(|service| service.binding == "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST") // Find the HTTP-POST binding
         .map(|service| service.location.clone()) // Return the location URL
@@ -225,10 +225,10 @@ async fn acs_handler(
         // Decode the base64-encoded SAML response
         match state
             .sp
-            .parse_base64_response(encoded_resp, request_ids.as_ref().map(|ids| ids.as_slice()))
+            .parse_base64_response(encoded_resp, request_ids.as_deref())
         {
             Ok(response) => {
-                println!("SAML Response received: {:?}", response);
+                println!("SAML Response received: {response:?}");
 
                 // Extract user information from SAML response
                 let email = extract_saml_attribute(&response, "eduPersonPrincipalName")
@@ -270,24 +270,24 @@ async fn acs_handler(
                             <body>
                                 <h2>Login Successful</h2>
                                 <p>Welcome, <strong>{}</strong></p>
-                                <p>Your JWT token: {}</p>
+                                <p>Your JWT token: {token}</p>
                                 <p><small>This token is valid for 24 hours.</small></p>
                             </body>
                             </html>
                         "#,
-                            claims.name, token
+                            claims.name
                         );
 
                         Ok(html)
                     }
                     Err(e) => {
-                        eprintln!("JWT encoding error: {:?}", e);
+                        eprintln!("JWT encoding error: {e:?}");
                         Err(StatusCode::INTERNAL_SERVER_ERROR)
                     }
                 }
             }
             Err(e) => {
-                eprintln!("Error parsing SAML response: {:?}", e);
+                eprintln!("Error parsing SAML response: {e:?}");
                 Err(StatusCode::BAD_REQUEST)
             }
         }
