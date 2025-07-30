@@ -13,6 +13,8 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     libxmlsec1-dev \
     pkg-config \
+    clang \
+    libclang-dev \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=planner /app/recipe.json recipe.json
