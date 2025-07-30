@@ -13,6 +13,12 @@ base64 -i privatekey.pem
 base64 -i publickey.cer
 ```
 
+To generate the JWT secret, you can use the following command:
+
+```bash
+openssl rand -base64 32
+```
+
 If you are running this project on Mac, you may need to install `xmlsec`:
 
 ```bash

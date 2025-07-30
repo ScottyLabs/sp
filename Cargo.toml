@@ -6,9 +6,13 @@ edition = "2024"
 [dependencies]
 axum = "0.8.4"
 base64 = "0.22.1"
+chrono = { version = "0.4.41", features = ["serde"] }
 dotenvy = "0.15.7"
+jsonwebtoken = "9.3.1"
 openssl = "0.10.73"
 openssl-probe = "0.1.6"
 reqwest = "0.12.22"
 samael = { version = "0.0.19", features = ["xmlsec"] }
+serde = { version = "1.0.219", features = ["derive"] }
 tokio = { version = "1.47.0", features = ["full"] }
+urlencoding = "2.1.3"
