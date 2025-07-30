@@ -80,8 +80,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/health", get(|| async { "OK" }))
         .with_state(state);
 
-    let port = dotenvy::var("PORT")?;
-    let listener = TcpListener::bind(format!("0.0.0.0:{port}")).await?;
+    let listener = TcpListener::bind("0.0.0.0:8080").await?;
 
     println!("Service Provider running on {base_url}");
     println!("Metadata available at: {base_url}/saml/metadata");
