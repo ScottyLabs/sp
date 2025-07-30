@@ -12,6 +12,7 @@ FROM chef AS builder
 RUN apt-get update && apt-get install -y \
     libxml2-dev \
     libxmlsec1-dev \
+    libxmlsec1-openssl \
     pkg-config \
     clang \
     libclang-dev \
@@ -31,6 +32,7 @@ FROM debian:bookworm-slim AS runtime
 RUN apt-get update && apt-get install -y \
     libxml2 \
     libxmlsec1 \
+    libxmlsec1-openssl \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
